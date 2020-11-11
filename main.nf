@@ -22,8 +22,8 @@ Channel
     .combine(fam)
     .combine(ids_to_include)
     .dump()
-    .set{genotypes_to_filter}
+    .set{plink2_input}
 
 workflow {
-    plink2(params)
+    plink2(plink2_input)
 }
