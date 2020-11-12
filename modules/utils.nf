@@ -2,10 +2,10 @@ nextflow.enable.dsl=2
 
 process make_phenotypes {
     input:
-        file(phenotypes)
-        file(to_include)
+        path(phenotypes)
+        path(to_include)
     output:
-        file("phenotypes.txt"), emit: pheno
+        path("phenotypes.txt"), emit: pheno
     script:
         """
         #!/usr/bin/env Rscript

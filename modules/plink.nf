@@ -4,9 +4,9 @@ process plink2 {
     tag "$prefix"
 
     input:
-        tuple val(prefix), file(genotypes), file(fam), file(to_include)
+        tuple val(prefix), path(genotypes), path(fam), path(to_include)
     output:
-        tuple val(prefix), file("${prefix}.raw.gz"), emit: genotypes_hard_calls_only
+        tuple val(prefix), path("${prefix}.raw.gz"), emit: genotypes_hard_calls_only
     script:
         """
         plink2 --bpfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
