@@ -2,6 +2,8 @@ nextflow.enable.dsl=2
 
 process make_phenotypes {
     label "R"
+    tag "phenotypes"
+    publishDir "results/", mode: 'copy'
 
     input:
         path(phenotypes)
@@ -20,7 +22,7 @@ process make_phenotypes {
             mutate(ids = paste0("f.", X1, ".0.0"))
         all_phenotypes <- vroom("$phenotypes",
                                 col_names = TRUE,
-                                num_threads = $params.cpus,
+                                num_threads = $task.cpus,
                                 col_select = c(f.eid,
                                                all_of(to_include\$ids))) %>% 
             rename(FID = f.eid) %>% 
