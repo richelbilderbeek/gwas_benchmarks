@@ -25,10 +25,12 @@ process make_phenotypes {
                                 num_threads = $task.cpus,
                                 col_select = c(f.eid,
                                                all_of(to_include\$ids))) %>% 
-            rename(FID = f.eid) %>% 
+            rename(FID = f.eid) %>%
+            mutate(IID = FID) %>%
+            relocate(IID, .after = FID) %>%
             rename_at(vars(to_include\$ids), ~ to_include\$X2) %>%
-            mutate(phenotype = case_when(is.na(age_astma_diagnosed) ~ "control",
-                                         TRUE ~ "asthma")) %>%
+            mutate(phenotype = case_when(is.na(age_astma_diagnosed) ~ 1,
+                                         TRUE ~ 2)) %>%
             mutate(phenotype = as_factor(phenotype))
         
         write_tsv(all_phenotypes, path = "phenotypes.txt")

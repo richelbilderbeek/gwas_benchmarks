@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include { plink2 } from './modules/plink.nf'
+include { plink2; plink2_hardcalls } from './modules/plink.nf'
 include { make_phenotypes } from './modules/utils.nf'
 
 Channel
@@ -18,18 +18,29 @@ Channel
     .set{ phenotypes_file }
 
 
-workflow plink2 {
+workflow plink {
     make_phenotypes(phenotypes_file, phenotypes_to_include)
     Channel
         .fromPath(params.genotypes)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
         .combine(fam)
+        .combine(ids_to_include)
         .combine(make_phenotypes.out.pheno)
         .dump()
         .set{ plink2_input }
+    Channel
+        .fromPath(params.genotypes_bim_bed)
+        .map { file -> tuple(file.baseName, file) }
+        .groupTuple(by:0)
+        .combine(fam)
+        .combine(ids_to_include)
+        .combine(make_phenotypes.out.pheno)
+        .dump()
+        .set{ plink2_input_hardcalls }
 
     plink2(plink2_input)
+    plink2_hardcalls(plink2_input_hardcalls)
 }
 
 
