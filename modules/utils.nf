@@ -38,6 +38,60 @@ process make_phenotypes {
 }
 
 
+process filter_cohort {
+    label "plink2"
+    publishDir "results/genotypes", mode: "copy"
+    input:
+        tuple val(prefix), path(genotypes), path(fam), path(to_include)
+    output:
+        tuple val(prefix), path("out/${prefix}.{bim, bed}"), path(fam)
+    script:
+        """
+        mkdir out
+        plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
+            --fam "${fam}" --keep "${to_include}" --maf 0.01 \
+            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
+            --out "out/${prefix}"
+        """
+}
+
+
+process filter_hardcalls {
+    label "plink2"
+    publishDir "results/genotypes/hardcalls", mode: "copy"
+    input:
+        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(hardcalls)
+    output:
+        tuple val(prefix), path(fam), path("out/${prefix}.{bim, bed}"), emit: genotypes_hardcalls_filtered
+    script:
+        """
+        mkdir out
+        plink2 --threads "${task.cpus}" --bfile "${prefix}" \
+            --fam "${fam}" --keep "${to_include}" --maf 0.01 \
+            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
+            --extract "${hardcalls}" --out "out/${prefix}"
+        """
+}
+
+
+process unpack_hard_calls {
+    input:
+        path(hardcalls)
+    output:
+        path("*.txt"), emit: hardcalls_list
+    script:
+        """
+        tar xf "${hardcalls}"
+        for bim in *bim
+            do
+                base=\$(basename "\${bim}" _v2.bim)
+                prefix="\${base#ukb_snp_}"
+                cut -f2 "\${bim}" > "\${prefix}".txt
+            done
+        """
+}
+
+
 process remove_not_biallelic {
     label "plink2"
 
@@ -57,11 +111,11 @@ process remove_not_biallelic {
 
 process merge_chromosomes {
     label "plink1"
-
+    publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
         tuple val(prefix), path(fam), path(genotypes_bim_bed)
     output:
-        tuple path("ukbb__all_chrs.bed"), path("ukbb__all_chrs.bim"), emit: geno_all_chrs
+        tuple path("merged.bed"), path("merged.bim"), emit: geno_all_chrs
     script:
         """
         for chr in {2..22}
@@ -76,20 +130,5 @@ process merge_chromosomes {
             --fam "${fam}"
             --merge-list list_beds.txt \
             --make-bed --out ukbb_all_chrs
-        """
-}
-
-
-process plink_qc {
-    input:
-    output:
-    script:
-        """
-        plink2 \
-            --bfile ukb_cal_allChrs \
-            --maf 0.01 --mac 100 --geno 0.1 --hwe 1e-15 \
-            --mind 0.1 \
-            --write-snplist --write-samples --no-id-header \
-            --out qc_pass
         """
 }
