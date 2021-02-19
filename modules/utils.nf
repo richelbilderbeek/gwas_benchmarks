@@ -62,7 +62,7 @@ process filter_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
-        tuple val(prefix), path(fam), path("out/${prefix}.{bim, bed}"), emit: genotypes_hardcalls_filtered
+        path("out/${prefix}.{bim, bed}"), emit: genotypes_hardcalls_filtered
     script:
         """
         mkdir out
@@ -113,7 +113,7 @@ process merge_chromosomes {
     label "plink1"
     publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
-        tuple val(prefix), path(fam), path(genotypes_bim_bed)
+        tuple path(genotypes_bim_bed), path(fam), 
     output:
         tuple path("merged.bed"), path("merged.bim"), emit: geno_all_chrs
     script:

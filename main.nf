@@ -49,7 +49,12 @@ workflow prep {
 
     filter_cohort(filter_input) 
     filter_hardcalls(filter_hardcalls_input)
-    merge_chromosomes(filter_hardcalls.out.genotypes_hardcalls_filtered)
+
+    filter_hardcalls.out.genotypes_hardcalls_filtered
+        .collect()
+        .combine(fam)
+        .set{to_merge}
+    merge_chromosomes(to_merge)
 }
 
 
