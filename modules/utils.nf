@@ -44,7 +44,7 @@ process filter_cohort {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
-        tuple val(prefix), path("out/${prefix}.{bim, bed}"), path(fam)
+        tuple val(prefix), path("out/${prefix}.{bim,bed}"), path(fam)
     script:
         """
         mkdir out
@@ -62,7 +62,7 @@ process filter_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
-        path("out/${prefix}.{bim, bed}"), emit: genotypes_hardcalls_filtered
+        path("out/${prefix}.{bim,bed}"), emit: genotypes_hardcalls_filtered
     script:
         """
         mkdir out
@@ -113,7 +113,8 @@ process merge_chromosomes {
     label "plink1"
     publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
-        tuple path(genotypes_bim_bed), path(fam)
+        path(fam)
+        path(genotypes_bim_bed)
     output:
         tuple path("merged.bed"), path("merged.bim"), emit: geno_all_chrs
     script:
@@ -127,7 +128,7 @@ process merge_chromosomes {
             --threads "${task.cpus}" \
             --bed chr1.bed \
             --bim chr1.bim \
-            --fam "${fam}"
+            --fam "${fam}" \
             --merge-list list_beds.txt \
             --make-bed --out ukbb_all_chrs
         """
