@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
-include { make_phenotypes; filter_cohort; unpack_hard_calls } from './modules/utils.nf'
+include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes } from './modules/utils.nf'
 
 Channel
     .fromPath(params.fam)
