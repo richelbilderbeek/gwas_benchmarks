@@ -113,7 +113,7 @@ process merge_chromosomes {
     label "plink1"
     publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
-        tuple path(genotypes_bim_bed), path(fam), 
+        tuple path(genotypes_bim_bed), path(fam)
     output:
         tuple path("merged.bed"), path("merged.bim"), emit: geno_all_chrs
     script:
