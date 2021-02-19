@@ -36,8 +36,15 @@ workflow prep {
         .dump()
         .set{filter_input}
 
-    filter_input
+    Channel
+        .fromPath(params.genotypes_bim_bed)
+        .map{file -> tuple(file.baseName, file)}
+        .groupTuple(by:0)
+        .combine(fam)
+        .combine(ids_to_include)
+        .combine(make_phenotypes.out.pheno)
         .combine(hardcalls_list_with_names, by:0)
+        .dump()
         .set{filter_hardcalls_input}
 
     filter_cohort(filter_input) 
