@@ -60,7 +60,7 @@ process filter_hardcalls {
     label "plink2"
     publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
-        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(hardcalls)
+        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
         tuple val(prefix), path(fam), path("out/${prefix}.{bim, bed}"), emit: genotypes_hardcalls_filtered
     script:
