@@ -42,7 +42,7 @@ process filter_cohort {
     label "plink2"
     publishDir "results/genotypes", mode: "copy"
     input:
-        tuple val(prefix), path(genotypes), path(fam), path(to_include)
+        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
         tuple val(prefix), path("out/${prefix}.{bim, bed}"), path(fam)
     script:
