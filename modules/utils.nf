@@ -121,7 +121,7 @@ process merge_chromosomes {
         """
         for chr in {2..22}
             do
-                echo "\${chr}.bed \${chr}.bim" "${fam}" >> list_beds.txt
+                echo "chr\${chr}.bed chr\${chr}.bim" "${fam}" >> list_beds.txt
             done
 
         plink \
