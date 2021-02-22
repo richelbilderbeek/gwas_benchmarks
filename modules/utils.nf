@@ -92,23 +92,6 @@ process unpack_hard_calls {
 }
 
 
-process remove_not_biallelic {
-    label "plink2"
-
-    input:
-        path(fam)
-        path(genotypes_bim_bed)
-    output:
-        path("out/${prefix}*"), emit: genotypes_biallelic
-    script:
-        """
-        mkdir out
-        plink2 --threads "${task.cpus}" --bfile "${prefix}" \
-            --fam "${fam}" --max-alleles 2 --make-bed --out "out/${prefix}"
-        """
-}
-
-
 process merge_chromosomes {
     label "plink1"
     publishDir "results/genotypes/hardcalls", mode: "copy"
