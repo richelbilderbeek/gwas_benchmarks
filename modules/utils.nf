@@ -99,7 +99,7 @@ process remove_not_biallelic {
         path(fam)
         path(genotypes_bim_bed)
     output:
-        tuple val(prefix), path(fam), path("out/${prefix}*"), emit: genotypes_biallelic
+        path("out/${prefix}*"), emit: genotypes_biallelic
     script:
         """
         mkdir out
