@@ -92,27 +92,53 @@ process unpack_hard_calls {
 }
 
 
-process merge_chromosomes {
+process generate_exclude_non_biallelic {
     label "plink1"
-    publishDir "results/genotypes/hardcalls", mode: "copy"
     input:
         path(fam)
         path(genotypes_bim_bed)
     output:
-        tuple path("merged.bed"), path("merged.bim"), emit: geno_all_chrs
+        path("ukbb_all_chrs-merge.missnp"), emit: non_biallelic_to_exclude
     script:
         """
         for chr in {2..22}
             do
                 echo "chr\${chr}.bed chr\${chr}.bim" "${fam}" >> list_beds.txt
             done
-
+        trap 'if [[ \$? == 3 ]]; then echo OK; exit 0; fi' EXIT
         plink \
             --threads "${task.cpus}" \
             --bed chr1.bed \
             --bim chr1.bim \
             --fam "${fam}" \
             --merge-list list_beds.txt \
+            --make-bed --out ukbb_all_chrs
+        """
+}
+
+
+process merge_chromosomes {
+    label "plink1"
+    publishDir "results/genotypes/hardcalls", mode: "copy"
+    input:
+        path(fam)
+        path(non_biallelic_to_exclude)
+        path(genotypes_bim_bed)
+    output:
+        path("ukbb_all_chrs*.{bim,bed}"), emit: merged_chr
+    script:
+        """
+        for chr in {2..22}
+            do
+                echo "chr\${chr}.bed chr\${chr}.bim" "${fam}" >> list_beds.txt
+            done
+        plink \
+            --threads "${task.cpus}" \
+            --bed chr1.bed \
+            --bim chr1.bim \
+            --fam "${fam}" \
+            --merge-list list_beds.txt \
+            --exclude ukbb_all_chrs-merge.missnp \
             --make-bed --out ukbb_all_chrs
         """
 }
