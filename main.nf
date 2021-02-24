@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
-include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; generate_exclude_non_biallelic; merge_chromosomes } from './modules/utils.nf'
+include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes } from './modules/utils.nf'
 
 Channel
     .fromPath(params.fam)
@@ -49,12 +49,8 @@ workflow prep {
 
     filter_cohort(filter_input) 
     filter_hardcalls(filter_hardcalls_input)
+    // merge_chromosomes(fam, filter_hardcalls.out.genotypes_hardcalls_filtered.collect())
 
-    generate_exclude_non_biallelic(fam,
-                                   filter_hardcalls.out.genotypes_hardcalls_filtered.collect())
-    merge_chromosomes(fam,
-                      generate_exclude_non_biallelic.out.non_biallelic_to_exclude,
-                      filter_hardcalls.out.genotypes_hardcalls_filtered.collect())
 }
 
 
