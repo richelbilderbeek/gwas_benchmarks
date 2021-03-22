@@ -47,7 +47,7 @@ process filter_cohort {
         tuple val(prefix), path("genotypes/${prefix}.{bed,bim}"), path(fam)
     script:
         """
-        mkdir out
+        mkdir genotypes
         plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
             --fam "${fam}" --keep "${to_include}" --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
@@ -65,7 +65,7 @@ process filter_hardcalls {
         path("hardcalls/${prefix}.{bed,bim}"), emit: genotypes_hardcalls_filtered
     script:
         """
-        mkdir hadrcalls
+        mkdir hardcalls
         plink2 --threads "${task.cpus}" --bfile "${prefix}" \
             --fam "${fam}" --keep "${to_include}" --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
