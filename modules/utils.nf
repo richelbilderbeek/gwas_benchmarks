@@ -40,18 +40,18 @@ process make_phenotypes {
 
 process filter_cohort {
     label "plink2"
-    publishDir "results/genotypes", mode: "copy"
+    publishDir "results/", mode: "copy"
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
-        tuple val(prefix), path("out/${prefix}.{pgen,bim}"), path(fam)
+        tuple val(prefix), path("genotypes/${prefix}.{bed,bim}"), path(fam)
     script:
         """
         mkdir out
         plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
             --fam "${fam}" --keep "${to_include}" --maf 0.01 \
-            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bpgen \
-            --out "out/${prefix}"
+            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
+            --out "genotypes/${prefix}"
         """
 }
 
@@ -62,14 +62,14 @@ process filter_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
-        path("out/${prefix}.{pgen,bim}"), emit: genotypes_hardcalls_filtered
+        path("hardcalls/${prefix}.{bed,bim}"), emit: genotypes_hardcalls_filtered
     script:
         """
-        mkdir out
+        mkdir hadrcalls
         plink2 --threads "${task.cpus}" --bfile "${prefix}" \
             --fam "${fam}" --keep "${to_include}" --maf 0.01 \
-            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bpgen \
-            --extract "${hardcalls}" --out "out/${prefix}"
+            --hwe 1e-20 --geno 0.05 --max-alleles 2 --make-bed \
+            --extract "${hardcalls}" --out "hardcalls/${prefix}"
         """
 }
 
