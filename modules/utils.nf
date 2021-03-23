@@ -28,11 +28,7 @@ process make_phenotypes {
             rename(FID = f.eid) %>%
             mutate(IID = FID) %>%
             relocate(IID, .after = FID) %>%
-            rename_at(vars(to_include\$ids), ~ to_include\$X2) %>%
-            mutate(phenotype = case_when(is.na(age_astma_diagnosed) ~ 1,
-                                         TRUE ~ 2)) %>%
-            mutate(phenotype = as_factor(phenotype))
-        
+            rename_at(vars(to_include\$ids), ~ to_include\$X2)
         write_tsv(all_phenotypes, path = "phenotypes.txt")
         """
 }
