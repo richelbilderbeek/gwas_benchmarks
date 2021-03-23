@@ -54,7 +54,7 @@ process filter_cohort {
 
 process filter_hardcalls {
     label "plink2"
-    publishDir "results/genotypes/hardcalls", mode: "copy"
+    publishDir "results/genotypes/", mode: "copy"
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
