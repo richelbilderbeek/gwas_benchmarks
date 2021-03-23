@@ -28,7 +28,8 @@ process make_phenotypes {
             rename(FID = f.eid) %>%
             mutate(IID = FID) %>%
             relocate(IID, .after = FID) %>%
-            rename_at(vars(to_include\$ids), ~ to_include\$X2)
+            rename_at(vars(to_include\$ids), ~ to_include\$X2) %>%
+            drop_na()
         write_tsv(all_phenotypes, path = "phenotypes.txt")
         """
 }
