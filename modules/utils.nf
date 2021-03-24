@@ -20,6 +20,13 @@ process make_phenotypes {
                                  delim = " ",
                                  trim_ws = TRUE) %>% 
             mutate(ids = paste0("f.", X1, ".0.0"))
+        
+        # add PCs
+        pcs <- paste0("f.22009.0.", seq(1, 15))
+        pcs_name <- paste0("PC", seq(1, 15))
+        pcs_tibble <- tibble(X1 = rep(22009, 15), X2 = pcs_name, ids = pcs)
+        to_include <- to_include %>% bind_rows(pcs_tibble)
+
         all_phenotypes <- vroom("$phenotypes",
                                 col_names = TRUE,
                                 num_threads = $task.cpus,
