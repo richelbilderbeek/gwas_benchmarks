@@ -5,15 +5,16 @@ process plink2 {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
     output:
-        tuple val(prefix), path("${prefix}.phenotype.glm.logistic"), emit:  plink_results
+        tuple val(prefix), path("${prefix}.phenotype.glm.*"), emit:  plink_results
     script:
         """
         plink2 --bpfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
             --out "${prefix}" --threads "${task.cpus}" \
-            --ci 0.95 --logistic hide-covar cols=+a1freq,+ax --maf 0.01 \
+            --ci 0.95 --glm hide-covar cols=+a1freq,+ax --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --pheno ${pheno} \
-            --covar ${pheno} --pheno-name phenotype \
-            --covar-name birth_weight breastfed maternal_smoking ever_smoked bmi
+            --covar ${pheno} --pheno-name standing_height \
+            --covar-name genetic_sex PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 \
+                PC9 PC10 PC11 PC12 PC13 PC14 PC15 
         """
 }
 
@@ -25,15 +26,16 @@ process plink2_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
     output:
-        tuple val(prefix), path("${prefix}.phenotype.glm.logistic"), emit:  plink_results_hardcalls
+        tuple val(prefix), path("${prefix}.phenotype.glm.*"), emit:  plink_results_hardcalls
     script:
         """
         # --bfile allows to drop imputed
         plink2 --bfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
             --out "${prefix}" --threads "${task.cpus}" \
-            --ci 0.95 --logistic hide-covar cols=+a1freq,+ax --maf 0.01 \
+            --ci 0.95 --glm hide-covar cols=+a1freq,+ax --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --pheno ${pheno} \
-            --covar ${pheno} --pheno-name phenotype \
-            --covar-name birth_weight breastfed maternal_smoking ever_smoked bmi
+            --covar ${pheno} --pheno-name standing_height \
+            --covar-name genetic_sex PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 \
+                PC9 PC10 PC11 PC12 PC13 PC14 PC15 
         """
 }
