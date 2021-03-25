@@ -5,7 +5,7 @@ process plink2 {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
     output:
-        tuple val(prefix), path("${prefix}.phenotype.glm.linear"), emit:  plink_results
+        tuple val(prefix), path("${prefix}.*.glm.linear"), emit:  plink_results
     script:
         """
         plink2 --bpfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
@@ -26,7 +26,7 @@ process plink2_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
     output:
-        tuple val(prefix), path("${prefix}.phenotype.glm.linear"), emit:  plink_results_hardcalls
+        tuple val(prefix), path("${prefix}.*.glm.linear"), emit:  plink_results_hardcalls
     script:
         """
         # --bfile allows to drop imputed
