@@ -57,7 +57,7 @@ workflow prep {
 workflow plink {
     make_phenotypes(phenotypes_file, phenotypes_to_include)
     Channel
-        .fromPath(params.genotypes)
+        .fromPath(params.genotypes_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
         .combine(fam)
@@ -66,7 +66,7 @@ workflow plink {
         .dump()
         .set{ plink2_input }
     Channel
-        .fromPath(params.genotypes_bim_bed)
+        .fromPath(params.hardcalls_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
         .combine(fam)
