@@ -3,12 +3,12 @@ process plink2 {
     label "plink2"
     publishDir "results/plink2/imputed", mode: 'copy'
     input:
-        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
+        tuple val(prefix), path(genotypes), path(to_include), path(pheno)
     output:
         tuple val(prefix), path("${prefix}.*.glm.linear"), emit:  plink_results
     script:
         """
-        plink2 --bpfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
+        plink2 --bpfile "${prefix}" --keep "${to_include}" \
             --out "${prefix}" --threads "${task.cpus}" \
             --ci 0.95 --glm hide-covar cols=+a1freq,+ax --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --pheno ${pheno} \
@@ -24,13 +24,13 @@ process plink2_hardcalls {
     label "plink2"
     publishDir "results/plink2/hardcalls", mode: 'copy'
     input:
-        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
+        tuple val(prefix), path(genotypes), path(to_include), path(pheno)
     output:
         tuple val(prefix), path("${prefix}.*.glm.linear"), emit:  plink_results_hardcalls
     script:
         """
         # --bfile allows to drop imputed
-        plink2 --bfile "${prefix}" --fam "${fam}" --keep "${to_include}" \
+        plink2 --bfile "${prefix}" --keep "${to_include}" \
             --out "${prefix}" --threads "${task.cpus}" \
             --ci 0.95 --glm hide-covar cols=+a1freq,+ax --maf 0.01 \
             --hwe 1e-20 --geno 0.05 --pheno ${pheno} \

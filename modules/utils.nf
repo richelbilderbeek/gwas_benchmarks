@@ -48,7 +48,7 @@ process filter_cohort {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
-        tuple val(prefix), path("genotypes/${prefix}.{bed,bim}"), path(fam)
+        tuple val(prefix), path("genotypes/${prefix}.{bed,bim,fam}"), path(fam)
     script:
         """
         mkdir genotypes
@@ -66,7 +66,7 @@ process filter_hardcalls {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes), path(hardcalls)
     output:
-        path("hardcalls/${prefix}.{bed,bim}"), emit: genotypes_hardcalls_filtered
+        path("hardcalls/${prefix}.{bed,bim,fam}"), emit: genotypes_hardcalls_filtered
     script:
         """
         mkdir hardcalls

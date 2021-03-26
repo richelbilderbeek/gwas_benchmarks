@@ -60,7 +60,6 @@ workflow plink {
         .fromPath(params.genotypes_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(fam)
         .combine(ids_to_include)
         .combine(make_phenotypes.out.pheno)
         .dump()
@@ -69,7 +68,6 @@ workflow plink {
         .fromPath(params.hardcalls_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(fam)
         .combine(ids_to_include)
         .combine(make_phenotypes.out.pheno)
         .dump()
