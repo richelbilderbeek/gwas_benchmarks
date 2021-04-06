@@ -48,7 +48,7 @@ process filter_cohort {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
-        tuple val(prefix), path("genotypes/${prefix}.{bed,bim,fam}"), path(fam)
+        tuple val(prefix), path("genotypes/${prefix}.{bed,bim,fam}"), path(fam), emit: genotypes_filtered
     script:
         """
         mkdir genotypes
@@ -77,6 +77,20 @@ process filter_hardcalls {
         """
 }
 
+
+process make_bgen {
+    label "plink2"
+    publishDir "results/genotypes", mode: "copy"
+    input:
+        tuple val(prefix), path(genotypes)
+    output:
+        path("${prefix}.{bgen,sample}"), emit: bgen_full
+    script:
+        """
+        plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
+            --fam "${fam}" --export bgen-1.3 --out "${prefix}"
+        """
+}
 
 process unpack_hard_calls {
     input:

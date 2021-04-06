@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
-include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes } from './modules/utils.nf'
+include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
 
 Channel
     .fromPath(params.fam)
@@ -49,6 +49,13 @@ workflow prep {
 
     filter_cohort(filter_input) 
     filter_hardcalls(filter_hardcalls_input)
+
+    filter_cohort.out.genotypes_filtered
+        .map{file -> tuple(file.baseName, file)}
+        .groupTuple(by:0)
+        .set{genotypes_bim_bed_fam}
+    make_bgen(genotypes_bim_bed_fam)
+        
     // merge_chromosomes(fam, filter_hardcalls.out.genotypes_hardcalls_filtered.collect())
 
 }
