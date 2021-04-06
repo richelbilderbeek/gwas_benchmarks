@@ -48,7 +48,7 @@ process filter_cohort {
     input:
         tuple val(prefix), path(genotypes), path(fam), path(to_include), path(phenotypes)
     output:
-        tuple val(prefix), path("genotypes/${prefix}.{bed,bim,fam}"), path(fam), emit: genotypes_filtered
+        tuple val(prefix), path("genotypes/${prefix}.{bed,bim,fam}"), emit: genotypes_filtered
     script:
         """
         mkdir genotypes
@@ -88,7 +88,7 @@ process make_bgen {
     script:
         """
         plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
-            --fam "${fam}" --export bgen-1.3 --out "${prefix}"
+            --export bgen-1.3 --out "${prefix}"
         """
 }
 

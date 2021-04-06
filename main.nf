@@ -51,8 +51,6 @@ workflow prep {
     filter_hardcalls(filter_hardcalls_input)
 
     filter_cohort.out.genotypes_filtered
-        .map{file -> tuple(file.baseName, file)}
-        .groupTuple(by:0)
         .set{genotypes_bim_bed_fam}
     make_bgen(genotypes_bim_bed_fam)
         
