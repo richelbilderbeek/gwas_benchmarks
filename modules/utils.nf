@@ -119,14 +119,40 @@ process merge_chromosomes {
         path("ukbb_merged.*"), emit: ukbb_merged
     script:
         """
+        # this is a placeholder containing the correct commands, but this step 
+        # is not implemented in the pipeline yet
+        # TODO automate the merging. it will need splitting into several
+        # processes
+        # 1. generate the exclude missnp list. Plink errors at this step
+        # the error code will need to be ignored (with a trap?)
         for chr in {2..22}
             do
-                echo "chr\${chr}.pgen chr\${chr}.bim" "${fam}" >> list_beds.txt
+                echo "chr\${chr}" >> temp_list_beds_to_exclude.txt
             done
-        plink2 --threads "${task.cpus}" \
-            --bpfile chr1 \
-            --fam "${fam}" \
-            --pmerge-list list_beds.txt \
-            --make-bed --out ukbb_all_chrs
+        plink --threads "${task.cpus}" \
+            --bfile chr1 \
+            --merge-list temp_list_beds_to_exclude.txt \
+            --make-bed --out to_exclude
+        
+        # 2. exclude the multiallelic snps from all chromosomes
+        for chr in {1..22}
+            do
+                plink --threads "${task.cpus}" \
+                --bfile chr\${chr} \
+                --exclude to_exclude-merge.missnp \
+                --make-bed \
+                --out chr\${chr}_dedup
+            done
+        
+        # 3. merge the files
+        for chr in {2..22}
+            do
+                echo "chr\${chr}_dedup" >> list_beds.txt
+            done
+        plink --threads "${task.cpus}" \
+            --bfile chr1 \
+            --merge-list list_beds.txt \
+            --make-bed \
+            --out hardcalls_merged
         """
 }
