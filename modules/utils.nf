@@ -87,7 +87,7 @@ process make_bgen {
         path("${prefix}.{bgen,sample}"), emit: bgen_full
     script:
         """
-        plink2 --threads "${task.cpus}" --bpfile "${prefix}" \
+        plink2 --threads "${task.cpus}" --bfile "${prefix}" \
             --export bgen-1.3 bits=8 --out "${prefix}"
         """
 }
