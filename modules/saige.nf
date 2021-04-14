@@ -1,17 +1,17 @@
 process saige_null_fitting {
     label "saige"
     input:
-        tuple val(hardcalls), path(hardcalls_files), path(pheno)
+        tuple path(hardcalls_bed), path(hardcalls_bim), path(hardcalls_fam), path(pheno)
     output:
         path("null_model.rda"), emit: null_model
         path("null_model.varianceRatio.txt"), emit: variance_ratio
     script:
         """
         step1_fitNULLGLMM.R \
-            --plinkFile ${hardcalls} \
+            --plinkFile merged_hardcalls \
             --phenoFile "${pheno}" \
             --phenoCol standing_height \
-            --sampleIDColinphenoFile=IID \  
+            --sampleIDColinphenoFile IID \
             --covarColList genetic_sex \
             --traitType quantitative \
             --invNormalize TRUE \
@@ -23,14 +23,11 @@ process saige_null_fitting {
 }
 
 
-process saige {
-    tag "$prefix"
+process saige_assoc {
     label "saige"
     publishDir "results/saige/", mode: 'copy'
     input:
-        path(null_model)
-        path(variance_ratio)
-        tuple val(prefix), path(genotypes)
+        tuple val(prefix), path(genotypes), path(null_model), path(variance_ratio)
     output:
         tuple val(prefix), path("${prefix}.out.txt"), emit: saige_results
     script:

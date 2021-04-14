@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
-include { saige_null_fitting; saige } from './modules/saige.nf'
+include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
 include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
 
 Channel
@@ -88,21 +88,22 @@ workflow saige {
     make_phenotypes(phenotypes_file, phenotypes_to_include)
     Channel
         .fromPath(params.hardcalls_merged)
-        .map { file -> tuple(file.baseName, file) }
         .combine(make_phenotypes.out.pheno)
         .dump()
         .set{ saige_input_hardcalls }
+
+    saige_null_fitting(saige_input_hardcalls)
+
     Channel
         .fromPath(params.genotypes_bgen)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
+        .combine(saige_null_fitting.out.null_model)
+        .combine(saige_null_fitting.out.variance_ratio)
         .dump()
         .set{ saige_input_assoc }
 
-    saige_null_fitting(saige_input_hardcalls)
-    saige(saige_null_fitting.out.null_model,
-          saige_null_fitting.out.variance_ratio,
-          saige_input_assoc)
+    saige_assoc(saige_input_assoc)
 }
 
 
