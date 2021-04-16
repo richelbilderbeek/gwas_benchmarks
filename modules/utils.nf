@@ -88,7 +88,7 @@ process make_bgen {
     script:
         """
         plink2 --threads "${task.cpus}" --bfile "${prefix}" \
-            --export bgen-1.3 bits=8 --out "${prefix}"
+            --export bgen-1.2 bits=8 --out "${prefix}"
         """
 }
 
