@@ -6,7 +6,7 @@ process bolt_lmm {
         path(imputed)
         path(pheno)
     output:
-        path("bolt_all_chr.*"), emit: bolt-results
+        path("bolt_all_chr.*"), emit: bolt_results
     script:
         """
         for bgen in *bgen
@@ -14,23 +14,21 @@ process bolt_lmm {
                 prefix=\$(basename \$bgen .bgen)
                 echo \$bgen \$prefix.sample >> list_bgen.txt
             done
-        # --bgenFile chr{1:22}.bgen \
-        # --sampleFile chr1.sample \
         bolt \
-            --bed hardcalls_chr{1:22}.bed \
-            --bim hardcalls_chr{1:22}.bim \
-            --fam hardcalls_chr{1:22}.fam \
+            --bed chr{1:22}.bed \
+            --bim chr{1:22}.bim \
+            --fam chr1.fam \
             --phenoFile "${pheno}" \
             --phenoCol standing_height \
             --covarFile "${pheno}" \
             --covarCol genetic_sex \
             --qCovarCol PC{1:15} \
-            --LDscoresFile \$BOLTtables/LDSCORE.1000G_EUR.tab.gz \
-            --geneticMapFile tables/genetic_map_hg19.txt.gz \
+            --LDscoresFile \$BOLT_LMM_ROOT/tables/LDSCORE.1000G_EUR.tab.gz \
+            --geneticMapFile \$BOLT_LMM_ROOT/tables/genetic_map_hg19_withX.txt.gz \
             --lmmForceNonInf \
             --numThreads ${task.cpus} \
             --statsFile bolt_all_chr.hardcalls.txt \
-            --bgenSampleFileList list_bgen.txt
+            --bgenSampleFileList list_bgen.txt \
             --statsFileBgenSnps bolt_all_chr.bgen.txt \
             --verboseStats
         """

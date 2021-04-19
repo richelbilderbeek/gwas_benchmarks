@@ -89,6 +89,7 @@ workflow saige {
     make_phenotypes(phenotypes_file, phenotypes_to_include)
     Channel
         .fromPath(params.hardcalls_merged)
+        .collect()
         .combine(make_phenotypes.out.pheno)
         .dump()
         .set{ saige_input_hardcalls }
