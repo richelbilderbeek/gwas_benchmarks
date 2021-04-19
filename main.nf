@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+include { bolt_lmm } from './modules/bolt.nf'
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
 include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
 include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
@@ -104,6 +105,21 @@ workflow saige {
         .set{ saige_input_assoc }
 
     saige_assoc(saige_input_assoc)
+}
+
+
+workflow bolt {
+    make_phenotypes(phenotypes_file, phenotypes_to_include)
+    Channel
+        .fromPath(params.hardcalls_filtered)
+        .collect()
+        .set{hardcalls}
+    Channel
+        .fromPath(params.genotypes_bgen)
+        .collect()
+        .set{imputed}
+
+    bolt_lmm(hardcalls, imputed, make_phenotypes.out.pheno)
 }
 
 
