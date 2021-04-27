@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 include { bolt_lmm } from './modules/bolt.nf'
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
 include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
+include { regenie_step_1; regenie_step_2 } from './modules/regenie.nf'
 include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
 
 Channel
@@ -125,17 +126,26 @@ workflow bolt {
 
 
 workflow regenie {
+    make_phenotypes(phenotypes_file, phenotypes_to_include)
     Channel
-        .fromPath(params.genotypes_bim_bed)
+        .fromPath(params.hardcalls_merged)
+        .collect()
+        .combine(make_phenotypes.out.pheno)
+        .dump()
+        .set{ regenie_input_step_1 }
+
+    regenie_step_1(regenie_input_step_1)
+
+    Channel
+        .fromPath(params.genotypes_bgen)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(fam)
+        .combine(make_phenotypes.out.pheno)
+        .combine(regenie_input_step_1.out.regenie_predictions)
         .dump()
-        .set{ regenie_input_unfiltered }
-    remove_not_biallelic(fam, regenie_input_unfiltered)
-    merge_chromosomes(remove_not_biallelic.out.genotypes_biallelic.collect())
-    plink_qc
-    regenie
+        .set{ regenie_input_step_2 }
+
+    regenie_step_2(regenie_input_step_2)
 }
 
 
