@@ -1,6 +1,7 @@
 process bolt_lmm {
     label "bolt"
-    tag "${prefix}"
+    publishDir "results/bolt/", mode: 'copy'
+    tag "all"
     input:
         path(hardcalls)
         path(imputed)
