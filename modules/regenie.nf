@@ -15,7 +15,6 @@ process regenie_step_1 {
             --covarCol genetic_sex \
             --bsize 1000 \
             --lowmem \
-            --lowmem-prefix \$SNIC_TMP \
             --threads ${task.cpus} \
             --out regenie_step_1
         """
@@ -33,15 +32,15 @@ process regenie_step_2 {
         """
         regenie \
             --step 2 \
-            --bgen ${bgen} \
+            --bgen ${prefix}.bgen \
             --ref-first \
-            --sample ${sample} \
+            --sample ${prefix}.sample \
             --phenoFile ${pheno} \
             --covarFile ${pheno} \
             --phenoCol standing_height \
             --covarCol genetic_sex \
             --firth 0.01 --approx \
-            --pred ${step_1_pred} \
+            --pred ${pred} \
             --bsize 400 \
             --split \
             --threads ${task.cpus} \

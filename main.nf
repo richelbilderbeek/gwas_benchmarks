@@ -141,7 +141,7 @@ workflow regenie {
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
         .combine(make_phenotypes.out.pheno)
-        .combine(regenie_input_step_1.out.regenie_predictions)
+        .combine(regenie_step_1.out.regenie_predictions)
         .dump()
         .set{ regenie_input_step_2 }
 
