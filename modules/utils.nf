@@ -42,6 +42,40 @@ process make_phenotypes {
 }
 
 
+process make_train_test {
+    label "R"
+    tag "ids"
+    publishDir "results/", mode: "copy"
+    input:
+        path(phenotypes)
+    output:
+        path("train_ids_to_include.txt"), emit: train_ids_to_include
+        path("test_ids_to_include.txt"), emit: test_ids_to_include
+        path("phenotypes_split.rds"), emit: splits_rds
+    script:
+        """
+        #!/usr/bin/env Rscript
+        library(tidyverse)
+        library(tidymodels)
+
+        set.seed(1)
+        phenotypes <- read_tsv($phenotypes)
+        splits <- initial_split(phenotypes,
+                                strata = "genetic_sex")
+        train_data <- training(splits)
+        test_data <- testing(splits)
+        train_ids_to_include <- train_data %>%
+            select(FID, IID)
+        test_ids_to_include <- test_data %>%
+            select(FID, IID)
+        
+        write_tsv(train_ids_to_include, path = "train_ids_to_include.txt")
+        write_tsv(test_ids_to_include, path = "test_ids_to_include.txt")
+        saveRDS(splits, "phenotypes_split.rds")
+        """
+}
+
+
 process filter_cohort {
     label "plink2"
     publishDir "results/", mode: "copy"

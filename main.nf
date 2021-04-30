@@ -5,7 +5,7 @@ include { bolt_lmm } from './modules/bolt.nf'
 include { plink2; plink2_hardcalls } from './modules/plink.nf'
 include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
 include { regenie_step_1; regenie_step_2 } from './modules/regenie.nf'
-include { make_phenotypes; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
+include { make_phenotypes; make_train_test; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
 
 Channel
     .fromPath(params.fam)
@@ -29,6 +29,7 @@ workflow prep {
         .set{hardcalls_list_with_names}
 
     make_phenotypes(phenotypes_file, phenotypes_to_include)
+    make_train_test(make_phenotypes.out.pheno)
     Channel
         .fromPath(params.genotypes)
         .map{file -> tuple(file.baseName, file)}
