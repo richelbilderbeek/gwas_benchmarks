@@ -65,19 +65,25 @@ workflow prep {
 
 workflow plink {
     Channel
+        .fromPath(params.ids_to_include_train)
+        .set{ids_to_include_train}
+    Channel
+        .fromPath(params.phenotypes_filtered)
+        .set{phenotypes}
+    Channel
         .fromPath(params.genotypes_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(params.ids_to_include_train)
-        .combine(params.phenotypes_filtered)
+        .combine(ids_to_include_train)
+        .combine(phenotypes)
         .dump()
         .set{ plink2_input }
     Channel
         .fromPath(params.hardcalls_filtered)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(params.ids_to_include_train)
-        .combine(params.phenotypes_filtered)
+        .combine(ids_to_include_train)
+        .combine(phenotypes)
         .dump()
         .set{ plink2_input_hardcalls }
 
