@@ -35,7 +35,7 @@ workflow prep {
         .map{file -> tuple(file.baseName, file)}
         .groupTuple(by:0)
         .combine(fam)
-        .combine(make_train_test.ou.train_ids_to_include)
+        .combine(make_train_test.out.train_ids_to_include)
         .combine(make_phenotypes.out.pheno)
         .dump()
         .set{filter_input}
@@ -45,7 +45,7 @@ workflow prep {
         .map{file -> tuple(file.baseName, file)}
         .groupTuple(by:0)
         .combine(fam)
-        .combine(make_train_test.ou.train_ids_to_include)
+        .combine(make_train_test.out.train_ids_to_include)
         .combine(make_phenotypes.out.pheno)
         .combine(hardcalls_list_with_names, by:0)
         .dump()
