@@ -59,7 +59,7 @@ process make_train_test {
         library(tidymodels)
 
         set.seed(1)
-        phenotypes <- read_tsv($phenotypes)
+        phenotypes <- read_tsv("$phenotypes")
         splits <- initial_split(phenotypes,
                                 strata = "genetic_sex")
         train_data <- training(splits)
