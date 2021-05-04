@@ -93,11 +93,13 @@ workflow plink {
 
 
 workflow saige {
-    make_phenotypes(phenotypes_file, phenotypes_to_include)
+    Channel
+        .fromPath(params.phenotypes_filtered)
+        .set{phenotypes}
     Channel
         .fromPath(params.hardcalls_merged)
         .collect()
-        .combine(make_phenotypes.out.pheno)
+        .combine(phenotypes)
         .dump()
         .set{ saige_input_hardcalls }
 
