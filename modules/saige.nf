@@ -8,7 +8,7 @@ process saige_null_fitting {
     script:
         """
         step1_fitNULLGLMM.R \
-            --plinkFile merged_hardcalls \
+            --plinkFile hardcalls_merged \
             --phenoFile "${pheno}" \
             --phenoCol standing_height \
             --sampleIDColinphenoFile IID \
