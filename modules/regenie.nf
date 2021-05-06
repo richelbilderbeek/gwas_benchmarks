@@ -8,7 +8,7 @@ process regenie_step_1 {
         """
         regenie \
             --step 1 \
-            --bed merged_hardcalls \
+            --bed hardcalls_merged \
             --phenoFile ${pheno} \
             --covarFile ${pheno} \
             --phenoCol standing_height \
