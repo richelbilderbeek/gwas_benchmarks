@@ -2,10 +2,10 @@
 nextflow.enable.dsl=2
 
 include { bolt_lmm } from './modules/bolt.nf'
-include { plink2; plink2_hardcalls } from './modules/plink.nf'
+include { plink2 } from './modules/plink.nf'
 include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
 include { regenie_step_1; regenie_step_2 } from './modules/regenie.nf'
-include { make_phenotypes; make_train_test; filter_cohort; filter_hardcalls; unpack_hard_calls; merge_chromosomes; make_bgen } from './modules/utils.nf'
+include { make_phenotypes; make_train_test } from './modules/utils.nf'
 
 Channel
     .fromPath(params.fam)
