@@ -35,9 +35,13 @@ workflow plink {
         .fromPath(params.phenotypes_filtered)
         .set{phenotypes}
     Channel
+        .fromPath(params.fam)
+        .set{fam}
+    Channel
         .fromPath(params.genotypes)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
+        .combine(fam)
         .combine(ids_to_include_train)
         .combine(phenotypes)
         .dump()
