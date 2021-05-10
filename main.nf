@@ -22,44 +22,8 @@ Channel
 
 
 workflow prep {
-    unpack_hard_calls(params.hardcalls)
-    unpack_hard_calls.out.hardcalls_list
-        .flatten()
-        .map{file -> tuple(file.baseName, file)}
-        .set{hardcalls_list_with_names}
-
     make_phenotypes(phenotypes_file, phenotypes_to_include)
     make_train_test(make_phenotypes.out.pheno)
-    Channel
-        .fromPath(params.genotypes)
-        .map{file -> tuple(file.baseName, file)}
-        .groupTuple(by:0)
-        .combine(fam)
-        .combine(make_train_test.out.train_ids_to_include)
-        .combine(make_phenotypes.out.pheno)
-        .dump()
-        .set{filter_input}
-
-    Channel
-        .fromPath(params.genotypes_bim_bed)
-        .map{file -> tuple(file.baseName, file)}
-        .groupTuple(by:0)
-        .combine(fam)
-        .combine(make_train_test.out.train_ids_to_include)
-        .combine(make_phenotypes.out.pheno)
-        .combine(hardcalls_list_with_names, by:0)
-        .dump()
-        .set{filter_hardcalls_input}
-
-    filter_cohort(filter_input) 
-    filter_hardcalls(filter_hardcalls_input)
-
-    filter_cohort.out.genotypes_filtered
-        .set{genotypes_bim_bed_fam}
-    make_bgen(genotypes_bim_bed_fam)
-        
-    // merge_chromosomes(fam, filter_hardcalls.out.genotypes_hardcalls_filtered.collect())
-
 }
 
 
@@ -71,24 +35,14 @@ workflow plink {
         .fromPath(params.phenotypes_filtered)
         .set{phenotypes}
     Channel
-        .fromPath(params.genotypes_filtered)
+        .fromPath(params.genotypes)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
         .combine(ids_to_include_train)
         .combine(phenotypes)
         .dump()
         .set{ plink2_input }
-    Channel
-        .fromPath(params.hardcalls_filtered)
-        .map { file -> tuple(file.baseName, file) }
-        .groupTuple(by:0)
-        .combine(ids_to_include_train)
-        .combine(phenotypes)
-        .dump()
-        .set{ plink2_input_hardcalls }
-
     plink2(plink2_input)
-    plink2_hardcalls(plink2_input_hardcalls)
 }
 
 

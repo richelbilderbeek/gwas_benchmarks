@@ -184,7 +184,7 @@ process merge_chromosomes {
                 echo "chr\${chr}_dedup" >> list_beds.txt
             done
         plink --threads "${task.cpus}" \
-            --bfile chr1 \
+            --bfile chr1_dedup \
             --merge-list list_beds.txt \
             --make-bed \
             --out hardcalls_merged
