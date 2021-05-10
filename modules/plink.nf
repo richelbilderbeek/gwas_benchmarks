@@ -3,7 +3,7 @@ process plink2 {
     label "plink2"
     publishDir "results/plink2/", mode: 'copy'
     input:
-        tuple val(prefix), path(genotypes), path(to_include), path(pheno)
+        tuple val(prefix), path(genotypes), path(fam), path(to_include), path(pheno)
     output:
         tuple val(prefix), path("${prefix}.*.glm.linear"), emit:  plink_results
     script:
