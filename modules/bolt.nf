@@ -5,6 +5,8 @@ process bolt_lmm {
     input:
         path(hardcalls)
         path(imputed)
+        path(sample)
+        path(fam)
         path(pheno)
     output:
         path("bolt_all_chr.*"), emit: bolt_results
@@ -13,12 +15,12 @@ process bolt_lmm {
         for bgen in *bgen
             do
                 prefix=\$(basename \$bgen .bgen)
-                echo \$bgen \$prefix.sample >> list_bgen.txt
+                echo \$bgen ${sample} >> list_bgen.txt
             done
         bolt \
             --bed chr{1:22}.bed \
             --bim chr{1:22}.bim \
-            --fam chr1.fam \
+            --fam "${fam}" \
             --phenoFile "${pheno}" \
             --phenoCol standing_height \
             --covarFile "${pheno}" \

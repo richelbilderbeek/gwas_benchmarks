@@ -81,7 +81,12 @@ workflow saige {
 
 
 workflow bolt {
-    make_phenotypes(phenotypes_file, phenotypes_to_include)
+    Channel
+        .fromPath(params.fam)
+        .set{fam}
+    Channel
+        .fromPath(params.phenotypes_filtered)
+        .set{phenotypes}
     Channel
         .fromPath(params.hardcalls_filtered)
         .collect()
@@ -90,8 +95,11 @@ workflow bolt {
         .fromPath(params.genotypes_bgen)
         .collect()
         .set{imputed}
+    Channel
+        .fromPath(params.bgen_sample)
+        .set{sample}
 
-    bolt_lmm(hardcalls, imputed, make_phenotypes.out.pheno)
+    bolt_lmm(hardcalls, imputed, sample, fam, phenotypes)
 }
 
 
