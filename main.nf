@@ -64,9 +64,13 @@ workflow saige {
     saige_null_fitting(saige_input_hardcalls)
 
     Channel
+        .fromPath(params.bgen_sample)
+        .set{sample}
+    Channel
         .fromPath(params.genotypes_bgen)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
+        .combine(sample)
         .combine(saige_null_fitting.out.null_model)
         .combine(saige_null_fitting.out.variance_ratio)
         .dump()

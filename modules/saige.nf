@@ -27,16 +27,16 @@ process saige_assoc {
     label "saige"
     publishDir "results/saige/", mode: 'copy'
     input:
-        tuple val(prefix), path(genotypes), path(null_model), path(variance_ratio)
+        tuple val(prefix), path(genotypes), path(sample), path(null_model), path(variance_ratio)
     output:
         tuple val(prefix), path("${prefix}.out.txt"), emit: saige_results
     script:
         """
         # saige wants a headerless .sample file
-        sed -e 1,2d < ${prefix}.sample > ${prefix}_headerless.sample
+        sed -e 1,2d < ${sample} > headerless.sample
         step2_SPAtests.R  \
             --bgenFile ${prefix}.bgen \
-            --sampleFile ${prefix}_headerless.sample \
+            --sampleFile headerless.sample \
             --chrom ${prefix} \
             --GMMATmodelFile ${null_model} \
             --varianceRatioFile ${variance_ratio} \
