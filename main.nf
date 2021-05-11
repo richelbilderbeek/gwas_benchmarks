@@ -88,7 +88,7 @@ workflow bolt {
         .fromPath(params.phenotypes_filtered)
         .set{phenotypes}
     Channel
-        .fromPath(params.hardcalls_filtered)
+        .fromPath(params.hardcalls)
         .collect()
         .set{hardcalls}
     Channel
