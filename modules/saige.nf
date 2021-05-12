@@ -1,12 +1,13 @@
 process saige_null_fitting {
     label "saige"
     input:
-        tuple path(hardcalls_bed), path(hardcalls_bim), path(hardcalls_fam), path(pheno)
+        tuple path(hardcalls_bed), path(hardcalls_bim), path(fam), path(pheno)
     output:
         path("null_model.rda"), emit: null_model
         path("null_model.varianceRatio.txt"), emit: variance_ratio
     script:
         """
+        cp "${fam}" hardcalls_merged.fam
         step1_fitNULLGLMM.R \
             --plinkFile hardcalls_merged \
             --phenoFile "${pheno}" \
