@@ -18,8 +18,8 @@ process bolt_lmm {
                 echo \$bgen ${sample} >> list_bgen.txt
             done
         bolt \
-            --bed chr{1:22}.bed \
-            --bim chr{1:22}.bim \
+            --bed hardcalls_merged.bed \
+            --bim hardcalls_merged.bim \
             --fam "${fam}" \
             --phenoFile "${pheno}" \
             --phenoCol standing_height \
