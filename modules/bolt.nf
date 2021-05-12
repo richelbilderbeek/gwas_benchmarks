@@ -37,7 +37,6 @@ process bolt_lmm {
         """
 }
 
-
 process filter_sample {
     label "R"
     input:
@@ -52,12 +51,20 @@ process filter_sample {
         fam_file <- read_delim("${fam}",
                         delim = "\t",
                         col_names = FALSE)
-        sample_file <- read_delim("${sample]"}
+        sample_file <- read_delim("${sample}",
                                 delim = " ")
 
         fam_ids <- fam_file\$X1
-        sample_file_to_keep <- sample_file %>%
+        sample_file_to_keep_tmp <- sample_file %>%
             filter(`ID_1` %in% fam_ids)
+        first_row <- tibble(
+            ID_1 = 0,
+            ID_2 = 0,
+            missing = 0,
+            sex  = "D"
+        )
+        sample_file_to_keep <- bind_rows(first_row,
+                                         sample_file_to_keep_tmp)
 
         write_delim(sample_file_to_keep,
                     "ukb_all_chr.sample",
