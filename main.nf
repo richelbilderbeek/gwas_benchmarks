@@ -93,6 +93,7 @@ workflow bolt {
         .set{phenotypes}
     Channel
         .fromPath(params.hardcalls_merged)
+        .collect()
         .set{hardcalls}
     Channel
         .fromPath(params.genotypes_bgen)
