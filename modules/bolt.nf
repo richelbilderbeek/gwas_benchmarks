@@ -43,7 +43,7 @@ process filter_sample {
         path(fam)
         path(sample)
     output:
-        path("ukb_all_chr.sample"), emit: sample
+        path("ukb_all_chr.fam"), emit: fam
     script:
         """
         #!/usr/bin/env Rscript
@@ -54,20 +54,13 @@ process filter_sample {
         sample_file <- read_delim("${sample}",
                                 delim = " ")
 
-        fam_ids <- fam_file\$X1
-        sample_file_to_keep_tmp <- sample_file %>%
-            filter(`ID_1` %in% fam_ids)
-        first_row <- tibble(
-            ID_1 = 0,
-            ID_2 = 0,
-            missing = 0,
-            sex  = "D"
-        )
-        sample_file_to_keep <- bind_rows(first_row,
-                                         sample_file_to_keep_tmp)
+        sample_file_ids <- sample_file\$ID_1
+        to_keep <- fam_file %>%
+            filter(`X1` %in% sample_file_ids)
 
-        write_delim(sample_file_to_keep,
-                    "ukb_all_chr.sample",
-                    delim = " ")
+        write_delim(to_keep,
+                    "ukb_all_chr.fam",
+                    delim = "\t",
+                    col_names = FALSE)
         """
 }

@@ -104,7 +104,7 @@ workflow bolt {
         .set{sample}
 
     filter_sample(fam, sample)
-    bolt_lmm(hardcalls, imputed, filter_sample.out.sample, fam, phenotypes)
+    bolt_lmm(hardcalls, imputed, sample, filter_sample.out.fam, phenotypes)
 }
 
 
