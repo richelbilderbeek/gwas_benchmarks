@@ -36,3 +36,31 @@ process bolt_lmm {
             --verboseStats
         """
 }
+
+
+process filter_sample {
+    label "R"
+    input:
+        path(fam)
+        path(sample)
+    output:
+        path("ukb_all_chr.sample"), emit: sample
+    script:
+        """
+        #!/usr/bin/env Rscript
+        library(tidyverse)
+        fam_file <- read_delim("${fam}",
+                        delim = "\t",
+                        col_names = FALSE)
+        sample_file <- read_delim("${sample]"}
+                                delim = " ")
+
+        fam_ids <- fam_file\$X1
+        sample_file_to_keep <- sample_file %>%
+            filter(`ID_1` %in% fam_ids)
+
+        write_delim(sample_file_to_keep,
+                    "ukb_all_chr.sample",
+                    delim = " ")
+        """
+}

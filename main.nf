@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include { bolt_lmm } from './modules/bolt.nf'
+include { filter_sample; bolt_lmm } from './modules/bolt.nf'
 include { plink2 } from './modules/plink.nf'
 include { saige_null_fitting; saige_assoc } from './modules/saige.nf'
 include { regenie_step_1; regenie_step_2 } from './modules/regenie.nf'
@@ -52,11 +52,15 @@ workflow plink {
 
 workflow saige {
     Channel
+        .fromPath(params.fam)
+        .set{fam}
+    Channel
         .fromPath(params.phenotypes_filtered)
         .set{phenotypes}
     Channel
         .fromPath(params.hardcalls_merged)
         .collect()
+        .combine(fam)
         .combine(phenotypes)
         .dump()
         .set{ saige_input_hardcalls }
@@ -99,7 +103,8 @@ workflow bolt {
         .fromPath(params.bgen_sample)
         .set{sample}
 
-    bolt_lmm(hardcalls, imputed, sample, fam, phenotypes)
+    filter_sample(fam, sample)
+    bolt_lmm(hardcalls, imputed, filter_sample.out.sample, fam, phenotypes)
 }
 
 
