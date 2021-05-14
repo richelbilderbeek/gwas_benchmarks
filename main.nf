@@ -55,21 +55,23 @@ workflow saige {
         .fromPath(params.fam)
         .set{fam}
     Channel
+        .fromPath(params.bgen_sample)
+        .set{sample}
+    Channel
         .fromPath(params.phenotypes_filtered)
         .set{phenotypes}
+
+    filter_sample(fam, sample)
     Channel
         .fromPath(params.hardcalls_merged)
         .collect()
-        .combine(fam)
+        .combine(filter_sample.out.fam)
         .combine(phenotypes)
         .dump()
         .set{ saige_input_hardcalls }
-
+    
     saige_null_fitting(saige_input_hardcalls)
 
-    Channel
-        .fromPath(params.bgen_sample)
-        .set{sample}
     Channel
         .fromPath(params.genotypes_bgen)
         .map { file -> tuple(file.baseName, file) }
@@ -109,13 +111,22 @@ workflow bolt {
 
 
 workflow regenie {
-    make_phenotypes(phenotypes_file, phenotypes_to_include)
+    Channel
+        .fromPath(params.phenotypes_filtered)
+        .set{phenotypes}
+    Channel
+        .fromPath(params.fam)
+        .set{fam}
+    Channel
+        .fromPath(params.bgen_sample)
+        .set{sample}
     Channel
         .fromPath(params.hardcalls_merged)
         .collect()
-        .combine(make_phenotypes.out.pheno)
+        .combine(fam)
+        .combine(phenotypes)
         .dump()
-        .set{ regenie_input_step_1 }
+        .set{regenie_input_step_1}
 
     regenie_step_1(regenie_input_step_1)
 
@@ -123,10 +134,11 @@ workflow regenie {
         .fromPath(params.genotypes_bgen)
         .map { file -> tuple(file.baseName, file) }
         .groupTuple(by:0)
-        .combine(make_phenotypes.out.pheno)
+        .combine(sample)
+        .combine(phenotypes)
         .combine(regenie_step_1.out.regenie_predictions)
         .dump()
-        .set{ regenie_input_step_2 }
+        .set{regenie_input_step_2}
 
     regenie_step_2(regenie_input_step_2)
 }
