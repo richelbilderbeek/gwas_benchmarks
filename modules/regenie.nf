@@ -1,11 +1,12 @@
 process regenie_step_1 {
     label "regenie"
     input:
-        tuple path(hardcalls_bed), path(hardcalls_bim), path(hardcalls_fam), path(pheno)
+        tuple path(hardcalls_bed), path(hardcalls_bim), path(fam), path(pheno)
     output:
         path("regenie_step_1_pred.list"), emit: regenie_predictions
     script:
         """
+        cp "${fam}" hardcalls_merged.fam
         regenie \
             --step 1 \
             --bed hardcalls_merged \
@@ -25,7 +26,7 @@ process regenie_step_2 {
     label "regenie"
     publishDir "results/regenie/", mode: 'copy'
     input:
-        tuple val(prefix), path(genotypes), path(pheno), path(pred)
+        tuple val(prefix), path(genotypes), path(sample), path(pheno), path(pred)
     output:
         path("*.regenie"), emit: results
     script:
@@ -34,7 +35,7 @@ process regenie_step_2 {
             --step 2 \
             --bgen ${prefix}.bgen \
             --ref-first \
-            --sample ${prefix}.sample \
+            --sample ${sample} \
             --phenoFile ${pheno} \
             --covarFile ${pheno} \
             --phenoCol standing_height \
