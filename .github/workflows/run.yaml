@@ -14,8 +14,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-#      - uses: stracquadaniolab/gh-action-setup-nextflow
+      - uses: stracquadaniolab/gh-action-setup-nextflow
 
       - name: Run
         run: nextflow run main.nf -resume -entry prep
